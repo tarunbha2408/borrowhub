@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8f6ef" />
+  <title>BorrowHub — Share. Borrow. Grow.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=3.3" />
+</head>
+<body class="pre-auth">
+  <section class="welcome-screen" id="welcomeScreen" aria-label="Welcome to BorrowHub">
+    <div class="welcome-glow welcome-glow-one"></div><div class="welcome-glow welcome-glow-two"></div>
+    <div class="welcome-content">
+      <div class="welcome-mark">B</div>
+      <p class="welcome-eyebrow">SVNIT CAMPUS COMMUNITY</p>
+      <h1>Welcome to <span>SVNIT BorrowHub</span></h1>
+      <p class="welcome-subtitle">Share what you have. Borrow what you need. Build a more connected campus.</p>
+      <div class="welcome-progress"><span></span></div>
+      <small>Preparing your student space…</small>
+    </div>
+  </section>
+  <script>
+    // Rapid auto-dismiss so screen never feels stuck
+    setTimeout(function() {
+      var w = document.getElementById("welcomeScreen");
+      if (w) {
+        w.classList.add("welcome-screen-exit");
+        setTimeout(function() {
+          if (w.parentNode) w.parentNode.removeChild(w);
+          document.body.classList.remove("pre-auth");
+        }, 200);
+      }
+    }, 400);
+  </script>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="BorrowHub home">
+      <span class="brand-mark">B</span>
+      <span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span>
+    </a>
+    <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+    <nav class="nav" id="mainNav">
+      <a class="active" href="#home">Home</a>
+      <a href="#marketplace">Explore Items</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#my-listings" data-auth="true">My Listings</a>
+      <a href="#data-studio" id="dataStudioNav" data-auth="true">Data Studio</a>
+      <a href="#query-lab" id="queryLabNav" data-auth="true">Query Lab</a>
+    </nav>
+    <label class="searchbar" aria-label="Search marketplace">
+      <span>⌕</span><input id="searchInput" type="search" placeholder="Search items, categories, or keywords..." /><button id="searchBtn" aria-label="Search">→</button>
+    </label>
+    <button class="admin-badge" id="navAdminBtn" type="button" style="display: none;" title="Open Campus Admin & Dispute Panel">🛡️ Manage Campus &amp; Claims</button>
+    <button class="icon-button notification-button" id="notificationBtn" title="Notifications" data-auth="true" aria-label="Notifications">♧<i id="notificationCount" hidden>0</i></button>
+    <button class="primary-button sign-in" id="signInBtn">Sign In <span>↗</span></button>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">SVNIT CAMPUS MARKETPLACE</p>
+        <h1>Borrow what you need.<br><em>Share what you have.</em></h1>
+        <p class="hero-subtitle">A smarter way to share resources across campus.</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#marketplace">Explore items <span>→</span></a>
+          <button class="outline-button" id="listItemHero"><span>＋</span> List an item</button>
+        </div>
+        <div class="hero-note"><span class="note-dot"></span> Built for campus. Powered by community.</div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of resources students can borrow">
+        <div class="doodle doodle-star">✳</div><div class="doodle doodle-spark">✧</div>
+        <div class="campus-illustration">⌂</div>
+        <div class="resource laptop">▰<small>LAPTOP</small></div>
+        <div class="book-stack"><b>DATA STRUCTURES</b><b>OPERATING SYSTEMS</b><b>COMPUTER NETWORKS</b></div>
+        <div class="calculator">▦<small>CALCULATOR</small></div>
+        <div class="headphones">◖◗</div>
+        <div class="racket">⌁</div>
+        <div class="hero-caption">Campus resources<br><strong>better together</strong> ♡</div>
+      </div>
+    </section>
+
+    <section class="categories section-wrap" aria-label="Browse categories">
+      <button class="category-tile cat-blue" data-category="Electronics"><span class="category-art">💻</span><strong>Electronics</strong><span class="tile-arrow">↗</span></button>
+      <button class="category-tile cat-cream" data-category="Books"><span class="category-art">📚</span><strong>Books &amp; Notes</strong><span class="tile-arrow">↗</span></button>
+      <button class="category-tile cat-pink" data-category="Lab Equipment"><span class="category-art">🧪</span><strong>Lab Equipment</strong><span class="tile-arrow">↗</span></button>
+      <button class="category-tile cat-green" data-category="Sports"><span class="category-art">🏸</span><strong>Sports</strong><span class="tile-arrow">↗</span></button>
+      <button class="category-tile cat-lilac" data-category="Stationery"><span class="category-art">🖍️</span><strong>Art &amp; Craft</strong><span class="tile-arrow">↗</span></button>
+      <button class="category-tile cat-peach" data-category="Daily Essentials"><span class="category-art">🎒</span><strong>Daily Essentials</strong><span class="tile-arrow">↗</span></button>
+    </section>
+
+    <section class="section-wrap listing-section" id="marketplace">
+      <div class="section-heading"><div><span class="section-kicker">FIND YOUR NEXT ESSENTIAL</span><h2><span class="heading-icon">✦</span> Popular on campus</h2></div><button class="text-button" id="viewAllPopular">View all <span>→</span></button></div>
+      <div class="product-grid" id="popularGrid"></div>
+    </section>
+
+    <section class="section-wrap listing-section recent-section">
+      <div class="section-heading"><div><span class="section-kicker">FRESH FROM THE COMMUNITY</span><h2><span class="heading-icon clock">◷</span> Recently added</h2></div><button class="text-button" id="viewAllRecent">View all <span>→</span></button></div>
+      <div class="product-grid" id="recentGrid"></div>
+    </section>
+
+    <section class="trust-strip section-wrap">
+      <div><span class="trust-icon">♢</span><strong>Verified students</strong></div><i></i>
+      <div><span class="trust-icon">◇</span><strong>Clear pricing</strong></div><i></i>
+      <div><span class="trust-icon">▦</span><strong>Date-based availability</strong></div>
+    </section>
+
+    <section class="section-wrap lower-grid" id="how-it-works">
+      <div class="how-panel">
+        <div class="section-heading compact"><div><span class="section-kicker">SIMPLE BY DESIGN</span><h2>How BorrowHub works</h2></div></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">1</span><div class="step-icon">⌕</div><h3>Find an item</h3><p>Browse resources shared by SVNIT students.</p></article>
+          <span class="step-arrow">›</span>
+          <article class="step"><span class="step-number">2</span><div class="step-icon">▦</div><h3>Request your dates</h3><p>Check availability and send a request to the owner.</p></article>
+          <span class="step-arrow">›</span>
+          <article class="step"><span class="step-number">3</span><div class="step-icon">♧</div><h3>Meet on campus</h3><p>Complete the exchange, use the item, and return it on time.</p></article>
+        </div>
+      </div>
+      <aside class="next-loan" id="my-listings">
+        <div class="next-loan-heading"><div><span class="section-kicker">YOUR BORROWHUB</span><h2>Your next loan</h2></div><button class="text-button" id="myLoansBtn">View all →</button></div>
+        <div class="loan-empty"><span class="loan-empty-icon">▤</span><strong>Your loans will appear here</strong><p>Once you request an item and its owner approves, your loan details will be shown here.</p></div>
+      </aside>
+    </section>
+
+    <section class="community-banner section-wrap">
+      <div class="community-icon">🌱</div><div><h2>Good things are better when shared.</h2><p>BorrowHub makes campus life more resourceful, affordable, and connected.</p></div><button class="outline-button" id="joinBtn">Join the community <span>→</span></button>
+    </section>
+
+    <!-- ============================ DATA STUDIO ============================ -->
+    <section class="section-wrap studio" id="dataStudio" hidden>
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">LIVE DATABASE REPORTING</span>
+          <h2><span class="heading-icon">▤</span> Campus Data Studio</h2>
+          <p class="studio-lead">Every figure below is read from the live database: table
+            statistics, aggregation and filter builders, join and sub-query explorers,
+            a controlled update form and the reporting views with their triggers.</p>
+        </div>
+      </div>
+
+      <div class="studio-toolbar">
+        <span class="studio-toolbar-label">Jump to</span>
+        <nav class="studio-jump" aria-label="Data Studio sections">
+          <a href="#query-lab" data-jump="queryLabCard">Query Lab</a>
+          <a href="#studio-overview" data-jump="studioOverview">Overview</a>
+          <a href="#studio-browse" data-jump="cardBrowse">Browse</a>
+          <a href="#studio-query" data-jump="cardAggregate">Queries</a>
+          <a href="#studio-report" data-jump="cardView">Views &amp; triggers</a>
+          <a href="#studio-login" data-jump="cardLogin">Login &amp; policy</a>
+        </nav>
+        <button type="button" class="studio-refresh" id="studioRefresh">↻ Refresh all</button>
+      </div>
+
+      <div id="studioNotice" class="studio-notice" hidden></div>
+
+      <div id="studioOverview">
+        <div class="studio-summary" id="studioSummary"></div>
+        <p class="studio-message" id="studioMessage"></p>
+      </div>
+
+      <div id="studioTop">
+        <div class="studio-grid">
+        <!-- ======================= QUERY LAB ======================= -->
+        <article class="studio-card studio-card-wide query-lab" id="queryLabCard">
+          <div class="ql-head">
+            <div>
+              <h3><span class="ql-logo">&gt;_</span> Query Lab</h3>
+              <p class="studio-help">Write read-only SQL against the live schema and run it
+                straight from the browser. You get the result grid, the server-side execution
+                time, the row cap and the optimiser plan — the same evidence the written
+                analysis reports.</p>
+            </div>
+            <div class="ql-badges">
+              <span class="ql-badge" id="qlBadge">checking access…</span>
+              <span class="ql-badge ghost">read-only sandbox</span>
+            </div>
+          </div>
+
+          <div class="ql-toolbar">
+            <label class="ql-picker">Example
+              <select id="qlExample"><option value="">Choose a sample query…</option></select>
+            </label>
+            <label class="ql-check"><input type="checkbox" id="qlPlan" checked /> Show plan</label>
+            <label class="ql-check"><input type="checkbox" id="qlHistoryOn" checked /> Remember</label>
+            <button type="button" class="primary-button studio-run" id="qlRun">Run query <kbd>⌘/Ctrl</kbd><kbd>↵</kbd></button>
+            <button type="button" class="outline-button studio-run" id="qlFormat">Format</button>
+            <button type="button" class="outline-button studio-run" id="qlCopy">Copy</button>
+            <button type="button" class="outline-button studio-run" id="qlClear">Clear</button>
+          </div>
+
+          <div class="ql-editor">
+            <textarea id="qlSql" spellcheck="false" autocomplete="off" placeholder="SELECT item_id, title, daily_fee FROM item ORDER BY daily_fee DESC;"></textarea>
+            <span class="ql-editor-hint">Ctrl/⌘ + Enter to run</span>
+          </div>
+
+          <div class="ql-status" id="qlStatus" hidden></div>
+          <div id="qlResult" class="studio-result">
+            <p class="studio-empty">Results appear here. Pick an example above to start.</p>
+          </div>
+
+          <details class="studio-xml ql-plan" id="qlPlanBox" hidden>
+            <summary>Optimiser plan <span class="ql-plan-note" id="qlPlanNote"></span></summary>
+            <div id="qlPlanResult"></div>
+          </details>
+
+          <details class="ql-history" id="qlHistoryBox" hidden>
+            <summary>Recent queries</summary>
+            <ul class="ql-history-list" id="qlHistoryList"></ul>
+          </details>
+        </article>
+        </div>
+
+      <div class="studio-grid">
+        <article class="studio-card" id="cardBrowse">
+          <h3>1 &middot; Browse a table</h3>
+          <p class="studio-help">Full table data rendered as an HTML table, with an XML view.</p>
+          <div class="studio-controls">
+            <label>Table<select id="studioTableSelect"></select></label>
+            <label>Rows<select id="studioRowLimit">
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select></label>
+          </div>
+          <div id="studioTableResult" class="studio-result"><p class="studio-empty">Pick a table to begin.</p></div>
+        </article>
+
+        <article class="studio-card" id="cardAggregate">
+          <h3>2 &middot; Aggregate a numeric column</h3>
+          <p class="studio-help">COUNT / SUM / AVG / MIN / MAX, with or without grouping.</p>
+          <div class="studio-controls">
+            <label>Table<select id="aggTable"></select></label>
+            <label>Function<select id="aggFunction"></select></label>
+            <label>Column<select id="aggColumn"></select></label>
+            <label>Group by<select id="aggGroupBy"></select></label>
+            <button type="button" class="primary-button studio-run" id="aggRun">Run query</button>
+          </div>
+          <div id="studioAggResult" class="studio-result"><p class="studio-empty">Run a query to see the result.</p></div>
+        </article>
+
+        <article class="studio-card">
+          <h3>3 &middot; Filter rows by condition</h3>
+          <p class="studio-help">Choose a column, an operator and a value.</p>
+          <div class="studio-controls">
+            <label>Table<select id="filterTable"></select></label>
+            <label>Column<select id="filterField"></select></label>
+            <label>Operator<select id="filterOperator"></select></label>
+            <label>Value<input id="filterValue" placeholder="e.g. 50 or NEW" /></label>
+            <button type="button" class="primary-button studio-run" id="filterRun">Run query</button>
+          </div>
+          <div id="studioFilterResult" class="studio-result"><p class="studio-empty">Run a query to see the result.</p></div>
+        </article>
+
+        <article class="studio-card">
+          <h3>4 &middot; Sub-query / correlated sub-query</h3>
+          <p class="studio-help">Data collected from more than one table.</p>
+          <div class="studio-controls">
+            <label>Mode<select id="multiMode">
+              <option value="subquery">Sub-query</option>
+              <option value="correlated">Correlated sub-query</option>
+            </select></label>
+            <label id="multiHostelField">Hostel<select id="multiHostel"></select></label>
+            <label id="multiDepositField" hidden>Minimum deposit (Rs.)<input id="multiDeposit" type="number" value="300" min="0" /></label>
+            <button type="button" class="primary-button studio-run" id="multiRun">Run query</button>
+          </div>
+          <p class="studio-help" id="studioMultiDescription"></p>
+          <div id="studioMultiResult" class="studio-result"><p class="studio-empty">Run a query to see the result.</p></div>
+        </article>
+
+        <article class="studio-card studio-card-wide">
+          <h3>5 &middot; Join two tables</h3>
+          <p class="studio-help">Both tables come from dropdowns, so is the join type.</p>
+          <div class="studio-controls">
+            <label>Left table<select id="joinLeft"></select></label>
+            <label>Join type<select id="joinType"></select></label>
+            <label>Right table<select id="joinRight"></select></label>
+            <button type="button" class="primary-button studio-run" id="joinRun">Run query</button>
+          </div>
+          <p class="studio-help" id="studioJoinInfo"></p>
+          <div id="studioJoinResult" class="studio-result"><p class="studio-empty">Run a query to see the result.</p></div>
+        </article>
+
+        <article class="studio-card">
+          <h3>6 &middot; Update a record</h3>
+          <p class="studio-help">Restricted to administrators; only whitelisted columns can change.</p>
+          <p class="studio-help" id="studioUpdateGate" hidden>Sign in as the campus administrator to use the update form.</p>
+          <form id="studioUpdateForm" class="studio-controls" hidden>
+            <label>Table<select id="updateTable"></select></label>
+            <label><span id="updatePkLabel">row id</span><input id="updateRowId" type="number" min="1" placeholder="1" /></label>
+            <label>Column<select id="updateColumn"></select></label>
+            <label>New value<span id="updateValueHost"><input id="updateValue" placeholder="new value" disabled /></span></label>
+            <button type="submit" class="primary-button studio-run">Save change</button>
+          </form>
+          <div id="studioUpdateResult" class="studio-result"></div>
+        </article>
+
+        <article class="studio-card studio-card-wide" id="cardView">
+          <h3>7 &middot; Reporting view &amp; trigger impact</h3>
+          <p class="studio-help">The view joins items with their owner for one hostel. An update
+            through the view has to pass the item validation trigger, and every accepted change
+            is written to the audit trail.</p>
+          <div class="studio-controls">
+            <label>View<select id="viewSelect"></select></label>
+            <button type="button" class="outline-button studio-run" id="viewLoad">Read view</button>
+          </div>
+          <div id="studioViewResult" class="studio-result"><p class="studio-empty">Load the view to see its rows.</p></div>
+
+          <h4>Insert a row through the stored procedure</h4>
+          <div class="studio-controls">
+            <label>Owner id<input id="viewOwner" type="number" value="1" min="1" /></label>
+            <label>Category id<input id="viewCategory" type="number" value="2" min="1" /></label>
+            <label>Location id<input id="viewLocation" type="number" value="1" min="1" /></label>
+            <label>Title<input id="viewTitle" placeholder="Lab multimeter" /></label>
+            <label>Daily fee<input id="viewFee" type="number" value="15" min="0" step="0.5" /></label>
+            <label>Deposit<input id="viewDeposit" type="number" value="200" min="0" step="1" /></label>
+            <button type="button" class="primary-button studio-run" id="viewInsert">Insert &amp; re-read</button>
+          </div>
+
+          <h4>Update through the view (trigger demonstration)</h4>
+          <form id="studioTriggerForm" class="studio-controls">
+            <label>Item id<input id="triggerItemId" type="number" value="1" min="1" /></label>
+            <label>New daily fee<input id="triggerFee" type="number" value="20" min="0" step="0.5" /></label>
+            <label>Condition<select id="triggerCondition">
+              <option value="">(unchanged)</option>
+              <option value="NEW">NEW</option>
+              <option value="GOOD">GOOD</option>
+              <option value="FAIR">FAIR</option>
+              <option value="WORN">WORN</option>
+              <option value="DAMAGED">DAMAGED</option>
+            </select></label>
+            <label>Listing status<select id="triggerStatus">
+              <option value="">(unchanged)</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="PAUSED">PAUSED</option>
+              <option value="ARCHIVED">ARCHIVED</option>
+            </select></label>
+            <button type="submit" class="primary-button studio-run">Apply update</button>
+          </form>
+          <div id="studioTriggerResult" class="studio-result"></div>
+        </article>
+
+        <article class="studio-card studio-card-wide" id="cardLogin">
+          <h3>8 &middot; Login record &amp; office-hours guard</h3>
+          <p class="studio-help">The login record is read through the stored procedure
+            <code>sp_user_login_data</code>. The office-hours guard is the trigger that blocks
+            changes to a borrow request outside the allowed campus window, and it is switched
+            through <code>sp_set_office_hours_guard</code>.</p>
+          <div class="studio-controls">
+            <button type="button" class="outline-button studio-run" id="loginDataLoad">Read my login record</button>
+            <button type="button" class="outline-button studio-run" id="officeHoursToggle">Toggle office-hours guard</button>
+          </div>
+          <div id="studioLoginResult" class="studio-result"></div>
+          <p class="studio-help" id="studioOfficeHoursState"></p>
+        </article>
+      </div>
+
+      <div class="studio-grid">
+        <article class="studio-card studio-card-wide">
+          <h3>9 &middot; Row count of every table</h3>
+          <p class="studio-help">Every base table in the schema with its live row count
+            (stored procedure <code>sp_application_statistics</code>).</p>
+          <div id="studioTableStats"></div>
+        </article>
+      </div>
+      </div><!-- /#studioTop -->
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a class="brand footer-brand" href="#home"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></a>
+    <div class="footer-links"><a href="#marketplace">Browse</a><button id="footerListItem">List an item</button><a href="#how-it-works">Help &amp; Safety</a><a href="mailto:borrowhub@example.com">Contact</a></div>
+    <p>Made for the SVNIT campus community.</p>
+  </footer>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="#home"><span>⌂</span>Home</a><a href="#marketplace"><span>⌕</span>Explore</a><button id="mobileList"><span>＋</span>List</button><button id="mobileAdmin" style="display: none;"><span>🛡️</span>Admin</button><button id="mobileProfile"><span>○</span>Profile</button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="authDialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></div>
+    <div class="auth-tabs" id="authTabs"><button class="auth-tab active" data-tab="login">Sign in</button><button class="auth-tab" data-tab="register">Create account</button></div>
+    <h2 id="authTitle">Welcome back</h2><p class="modal-subtitle" id="authSubtitle">Sign in with your SVNIT account to continue.</p>
+    <p id="authInlineMessage" class="auth-inline-message" role="alert" aria-live="assertive" hidden></p>
+    
+    <form id="authForm">
+      <label class="form-field"><span>Email address</span><input id="authEmail" type="email" placeholder="you@coed.svnit.ac.in (or @eed, @eced, @med, @aid, etc.)" required autocomplete="email"></label>
+      <label class="form-field" id="nameField" hidden><span>Full name</span><input id="authName" type="text" placeholder="Your full name" autocomplete="name"></label>
+      <label class="form-field" id="rollField" hidden><span>Roll number</span><input id="authRoll" type="text" placeholder="e.g. U22CS001"></label>
+      <label class="form-field" id="phoneField" hidden><span>Phone number (optional)</span><input id="authPhone" type="tel" placeholder="e.g. 9876543210"></label>
+      <label class="form-field" id="passwordField"><span>Password</span><div class="password-wrapper"><input id="authPassword" type="password" placeholder="Enter password (min 8 chars)" required minlength="8" autocomplete="current-password"><button type="button" class="toggle-password" id="toggleAuthPassword" aria-label="Show password" aria-pressed="false"><svg id="authEyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
+      <button class="primary-button modal-submit" id="authSubmit" type="submit">Sign in <span>→</span></button>
+    </form>
+
+    <div id="otpSection" hidden>
+      <p class="modal-subtitle" style="margin-top: 10px;">Enter the 6-digit verification code sent to your SVNIT email.</p>
+      <label class="form-field"><span>Verification code (OTP)</span><input id="verifyOtpInput" type="text" maxlength="6" placeholder="e.g. 123456" autocomplete="one-time-code"></label>
+      <button class="primary-button modal-submit" id="verifyOtpBtn" type="button">Verify Email &amp; Complete Sign In <span>→</span></button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <button class="forgot-button" id="resendOtpBtn" type="button" style="margin: 0;">Resend OTP code</button>
+        <button class="forgot-button" id="backToLoginBtn" type="button" onclick="backToLoginMode(event)" style="margin: 0;">← Back to sign in</button>
+      </div>
+    </div>
+
+    <!-- Password Reset Step 1: Verify OTP (Screen 2: verify OTP code only) -->
+    <div id="resetOtpSection" hidden>
+      <p class="modal-subtitle" style="margin-top: 10px;">Enter the 6-digit verification code sent to your SVNIT email.</p>
+      <label class="form-field"><span>6-Digit Verification Code</span><input id="resetOtpInput" type="text" maxlength="6" placeholder="e.g. 123456" autocomplete="one-time-code"></label>
+      <button class="primary-button modal-submit" id="verifyResetOtpBtn" type="button" onclick="handleVerifyResetOtp(event)">Verify Code <span>→</span></button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <button class="forgot-button" id="resendResetOtpBtn" type="button" onclick="handleResendResetOtp(event)" style="margin: 0;">Resend code</button>
+        <button class="forgot-button" id="resetBackToLoginBtn" type="button" onclick="backToLoginMode(event)" style="margin: 0;">← Back to sign in</button>
+      </div>
+    </div>
+
+    <!-- Password Reset Step 2: Set New Password (Screen 3: revealed only after OTP is confirmed) -->
+    <div id="setNewPasswordSection" hidden>
+      <p class="modal-subtitle" style="margin-top: 10px;">Choose a strong new password (minimum 8 characters) for your SVNIT account.</p>
+      <label class="form-field"><span>New Password</span><div class="password-wrapper"><input id="resetNewPassword" type="password" placeholder="New password (min 8 chars)" minlength="8" autocomplete="new-password"><button type="button" class="toggle-password" id="toggleResetPassword" aria-label="Show password" aria-pressed="false"><svg id="resetEyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></div></label>
+      <label class="form-field"><span>Confirm New Password</span><input id="resetConfirmPassword" type="password" placeholder="Re-enter new password" minlength="8" autocomplete="new-password"></label>
+      <button class="primary-button modal-submit" id="saveNewPasswordBtn" type="button" onclick="handleSaveNewPassword(event)">Set New Password &amp; Sign In <span>→</span></button>
+      <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+        <button class="forgot-button" id="setNewPasswordCancelBtn" type="button" onclick="backToLoginMode(event)" style="margin: 0;">Cancel &amp; return to sign in</button>
+      </div>
+    </div>
+
+    <div id="forgotPasswordActions" style="text-align: center; margin-top: 14px;">
+      <button class="forgot-button" id="forgotBtn" type="button" onclick="openForgotMode(event)">Forgot password?</button>
+      <button class="forgot-button" id="forgotBackBtn" type="button" onclick="backToLoginMode(event)" hidden>← Back to sign in</button>
+    </div>
+    
+    <div class="quick-accounts" id="quickAccountsSection">
+      <span class="quick-accounts-label">Demo Quick Sign-In</span>
+      <div class="quick-account-chips">
+        <button type="button" class="quick-chip" data-demo="admin" title="Campus Administrator">Admin</button>
+        <button type="button" class="quick-chip" data-demo="priya" title="Priya Sharma (Owner/Lender)">Priya (Lender)</button>
+        <button type="button" class="quick-chip" data-demo="aarav" title="Aarav Patel (Borrower)">Aarav (Borrower)</button>
+        <button type="button" class="quick-chip" data-demo="rohit" title="Rohit Verma (Student)">Rohit (Student)</button>
+      </div>
+    </div>
+    <p class="demo-note">Student &amp; Faculty access · Open to all SVNIT departments (EED, ECED, MED, COED, AID, AMHD, DOMS, DOHSS, CED, CHED, etc.).</p>
+  </dialog>
+
+  <dialog id="itemDialog" class="modal item-modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div id="itemDialogContent"></div>
+  </dialog>
+
+  <dialog id="listDialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></div>
+    <h2>List a campus resource</h2><p class="modal-subtitle">Add the details students need before requesting your item.</p>
+    <div id="listFormMessage" class="auth-inline-message error" style="display:none; margin-bottom: 14px;"></div>
+    <form id="listForm" novalidate>
+      <label class="form-field"><span>Item title *</span><input name="title" id="listTitleInput" placeholder="e.g. Scientific Calculator Casio fx-991EX" required maxlength="160"></label>
+      <label class="form-field"><span>Category *</span><select name="category_id" id="listCategorySelect" required><option value="">Choose category</option></select></label>
+      <label class="form-field"><span>Description</span><textarea name="description" id="listDescInput" rows="3" placeholder="Condition details, accessories, included chargers/manuals, pickup instructions..."></textarea><small id="descCharCounter" style="font-size: 10px; color: #718078; margin-top: 2px;">Condition details, accessories, and pickup instructions (optional).</small></label>
+      <div class="form-row"><label class="form-field"><span>Daily fee (₹) *</span><input name="daily_fee" type="number" min="0" step="0.50" required placeholder="10"></label><label class="form-field"><span>Refundable deposit (₹) *</span><input name="deposit_amount" type="number" min="0" step="1.00" required placeholder="200"></label></div>
+      <div class="form-row"><label class="form-field"><span>Condition</span><select name="item_condition"><option value="GOOD">GOOD</option><option value="NEW">NEW</option><option value="FAIR">FAIR</option><option value="WORN">WORN</option></select></label><label class="form-field"><span>Max borrow days</span><input name="max_borrow_days" type="number" min="1" max="90" required value="7"></label></div>
+      <label class="form-field"><span>Pickup location *</span><select name="location_id" id="listLocationSelect" required><option value="">Choose campus location</option></select></label>
+      <label class="form-field" id="customLocationField" hidden><span>Custom pickup spot</span><input name="custom_location" placeholder="e.g. Outside Mech Dept Workshop" maxlength="120"></label>
+      
+      <label class="form-field">
+        <span>Upload Photos (Max 5)</span>
+        <input type="file" id="itemImagesInput" accept="image/jpeg,image/png,image/webp" multiple style="padding: 8px;">
+        <div id="imagePreviewContainer" class="image-upload-preview"></div>
+      </label>
+
+      <div id="listFormBottomMessage" class="auth-inline-message error" style="display:none; margin-bottom: 12px;"></div>
+      <button class="primary-button modal-submit" type="submit">Publish Listing <span>→</span></button>
+    </form>
+    <p class="demo-note">Stored securely in MySQL &amp; Cloudinary with independent fee calculations.</p>
+  </dialog>
+
+  <dialog id="myListingsDialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></div>
+    <h2>My listings &amp; requests</h2>
+    <p class="modal-subtitle">Manage your campus listings and respond to incoming borrow requests.</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabMyItems" type="button">My Items (<span id="myItemsCount">0</span>)</button>
+      <button class="modal-tab" id="tabIncomingReqs" type="button">Incoming Requests (<span id="incomingReqCount">0</span>)</button>
+    </div>
+    <div id="myListingsContent"></div>
+    <button class="primary-button modal-submit" id="addListingFromMine" type="button" style="margin-top: 14px;">List an item <span>→</span></button>
+  </dialog>
+
+  <dialog id="loansDialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></div>
+    <h2>My loans</h2>
+    <p class="modal-subtitle">Track your active handovers, return OTP codes, and deposits.</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabBorrowedLoans" type="button">Borrowed (<span id="borrowedCount">0</span>)</button>
+      <button class="modal-tab" id="tabLentLoans" type="button">Lent (<span id="lentCount">0</span>)</button>
+    </div>
+    <div id="loansContent"></div>
+  </dialog>
+
+  <dialog id="notificationsDialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="margin: 0;">Notifications</h2>
+      <button type="button" class="text-button" id="markAllReadBtn" style="font-size: 11px;">Mark all read</button>
+    </div>
+    <div id="notificationsList" style="max-height: 400px; overflow-y: auto;"></div>
+  </dialog>
+
+  <dialog id="adminDashboardDialog" class="modal" style="width: min(840px, calc(100vw - 28px)); max-height: 90vh;">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Campus Administrator Dashboard</small></span></div>
+    <h2>🛡️ Campus Manager &amp; Damage Claims</h2>
+    <p class="modal-subtitle">Track and resolve damaged item claims, mediate student disputes, and manage held security deposits.</p>
+
+    <div class="admin-kpi-grid">
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-val" id="adminKpiDisputes" style="color: #b91c1c;">0</div>
+        <div class="admin-kpi-lbl">Open Disputes</div>
+      </div>
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-val" id="adminKpiDeposits" style="color: #15803d;">₹0</div>
+        <div class="admin-kpi-lbl">Held Deposits</div>
+      </div>
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-val" id="adminKpiLoans">0</div>
+        <div class="admin-kpi-lbl">Active Loans</div>
+      </div>
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-val" id="adminKpiStudents">0</div>
+        <div class="admin-kpi-lbl">Total Students</div>
+      </div>
+    </div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabAdminDisputes" type="button">Damaged Items &amp; Disputes (<span id="adminDisputesCount">0</span>)</button>
+      <button class="modal-tab" id="tabAdminLoans" type="button">Campus Loans &amp; Deposits</button>
+      <button class="modal-tab" id="tabAdminItems" type="button">All Items &amp; Moderation</button>
+    </div>
+
+    <div id="adminDisputesList" style="max-height: 440px; overflow-y: auto;">
+      <p style="text-align: center; color: #888; padding: 24px;">Loading damage claims and disputes...</p>
+    </div>
+    <div id="adminLoansList" style="max-height: 440px; overflow-y: auto;" hidden></div>
+    <div id="adminItemsList" style="max-height: 440px; overflow-y: auto;" hidden></div>
+  </dialog>
+
+  <dialog id="actionDialog" class="modal">
+    <form method="dialog" class="modal-close-form"><button class="close-modal" aria-label="Close">×</button></form>
+    <div class="modal-brand"><span class="brand-mark">B</span><span class="brand-copy"><strong>Borrow<span>Hub</span></strong><small>Share · Borrow · Grow</small></span></div>
+    <div id="actionDialogContent"></div>
+  </dialog>
+
+  <script src="studio.js?v=1.3"></script>
+  <script src="script.js?v=3.3"></script>
+  <script>
+    // Fail-safe auto-dismiss: ensures welcome screen never gets stuck
+    setTimeout(function() {
+      var w = document.getElementById("welcomeScreen");
+      if (w) {
+        w.classList.add("welcome-screen-exit");
+        setTimeout(function() {
+          if (w.parentNode) w.remove();
+          document.body.classList.remove("pre-auth");
+        }, 200);
+      }
+    }, 400);
+  </script>
+</body>
+</html>

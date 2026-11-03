@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Tests (MySQL service + pytest)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: 12345
+          MYSQL_DATABASE: borrowhub
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p12345"
+          --health-interval=10s --health-timeout=5s --health-retries=12
+
+    env:
+      DATABASE_URL: mysql+pymysql://root:12345@127.0.0.1:3306/borrowhub?charset=utf8mb4
+      JWT_SECRET_KEY: ci-test-secret-key-please-change-32chars
+      BORROWHUB_TEST_DATABASE: "0"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest httpx
+
+      - name: Load schema + seed
+        run: |
+          mysql -h 127.0.0.1 -uroot -p12345 borrowhub < database/schema.sql
+          mysql -h 127.0.0.1 -uroot -p12345 borrowhub < database/seed.sql
+
+      - name: Run tests
+        run: python -m pytest backend/tests -q
+
+      - name: Verify the PaaS schema file stays in sync
+        run: |
+          grep -Ei '^(drop database|create database|grant )' database/schema_paas.sql && exit 1 || true
+          mysql -h 127.0.0.1 -uroot -p12345 -e "CREATE DATABASE paas_check;"
+          mysql -h 127.0.0.1 -uroot -p12345 paas_check < database/schema_paas.sql
+          mysql -h 127.0.0.1 -uroot -p12345 paas_check < database/seed_paas.sql
+          mysql -h 127.0.0.1 -uroot -p12345 -N -B -e "SELECT COUNT(*) FROM paas_check.app_user;" | grep -qx 7

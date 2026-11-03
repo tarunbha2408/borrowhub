@@ -1,0 +1,46 @@
+# Render Blueprint - "New +" -> "Blueprint" -> select this repository.
+# NOTE: Render does not offer managed MySQL. Take a connection string from
+# Aiven/Railway/PlanetScale and put it in DATABASE_URL (docs/DEPLOYMENT_PAAS.md).
+services:
+  - type: web
+    name: borrowhub
+    runtime: docker
+    plan: starter
+    region: singapore
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        sync: false           # paste it in the Render dashboard (secret)
+      - key: JWT_SECRET_KEY
+        generateValue: true   # Render generates a 256-bit random value
+      - key: CORS_ORIGINS
+        value: '["https://borrowhub.onrender.com"]'
+      - key: PAYMENTS_SIMULATED
+        value: "True"
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+    disk:
+      name: uploads
+      mountPath: /var/data
+      sizeGB: 1
+
+  # Nightly reset at 18:30 UTC (00:00 IST): whatever a visitor created -
+  # accounts, listings, borrow requests - is discarded and the database is
+  # restored to its seeded state. Manual run: Render dashboard -> Cron Jobs.
+  - type: cron
+    name: borrowhub-demo-reset
+    runtime: docker
+    plan: starter
+    region: singapore
+    schedule: "30 18 * * *"
+    dockerCommand: python scripts/reset_demo.py
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true

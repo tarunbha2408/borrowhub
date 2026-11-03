@@ -1,0 +1,136 @@
+================================================================================
+BORROWHUB — COMPLETE CAMPUS RESOURCE SHARING PLATFORM (SVNIT SURAT)
+Tagline: Share · Borrow · Grow
+================================================================================
+
+0. SIGN-IN NOT WORKING? RUN THIS FIRST
+--------------------------------------------------------------------------------
+  python diagnose_login.py
+
+Read-only diagnostic: it reports whether .env is in the right place (backend/.env),
+whether MySQL connects, whether the seed accounts and password hashes are correct, and
+what /api/auth/login answers. Every FAIL comes with the exact fix.
+Full guide: docs/TROUBLESHOOTING.md
+
+
+1. QUICK RUN INSTRUCTIONS
+--------------------------------------------------------------------------------
+CRITICAL RULE: Always run commands from the project root directory (never cd backend).
+All package imports and batch scripts are anchored to the project root.
+
+To start the unified server (FastAPI + MySQL Backend + Full Frontend):
+
+  python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+
+Open in your web browser:
+  Application:   http://localhost:8000
+  Swagger Docs:  http://localhost:8000/api/docs
+  ReDoc Docs:    http://localhost:8000/api/redoc
+
+
+2. DEFAULT PRE-CONFIGURED STUDENT ACCOUNTS
+--------------------------------------------------------------------------------
+All test accounts share the same password for convenience:
+  Default Password:  Svnit@2026!
+
+Account 1: Priya Sharma (Item Owner / Lender)
+  Email:    priya@coed.svnit.ac.in
+  Role:     STUDENT
+  Roll No:  U22CS001
+  Hostel:   Mother Teresa Bhavan
+  Listed:   Scientific Calculator Casio fx-991EX, Engineering Drafter
+
+Account 2: Aarav Patel (Borrower)
+  Email:    aarav@coed.svnit.ac.in
+  Role:     STUDENT
+  Roll No:  U22CS014
+  Hostel:   Bhabha Bhavan
+
+Account 3: Rohit Verma (Student / Peer)
+  Email:    rohit@coed.svnit.ac.in
+  Role:     STUDENT
+  Roll No:  U22EE028
+  Hostel:   Swami Vivekananda Bhavan
+
+Account 4: Campus Administrator (Admin / Moderation)
+  Email:    admin@svnit.ac.in
+  Role:     ADMIN
+  Roll No:  SVNIT-ADMIN-01
+
+TIP: In the Sign In modal, click any of the "Demo Quick Sign-In" chips
+(Priya, Aarav, Rohit, Admin) to sign in instantly with 1 click!
+
+
+2a. EASIEST: SET UP THE WHOLE DATABASE WITH ONE COMMAND (Linux)
+--------------------------------------------------------------------------------
+  bash database/setup_database.sh
+
+It loads schema.sql + seed.sql, creates the application database user and verifies the
+result. (Back up any existing data first - schema.sql drops the borrowhub database.)
+
+2b. IF THE DATABASE DOES NOT CONNECT (error 1698 / 1045)
+--------------------------------------------------------------------------------
+On Arch/Fedora the MariaDB root account often uses 'unix_socket' authentication, so it
+does not accept a password. Create a dedicated user for the application:
+
+  sudo mariadb < database/create_app_user.sql
+
+Then set this in backend/.env:
+  DATABASE_URL=mysql+pymysql://borrowhub:BorrowHub2026@localhost:3306/borrowhub?charset=utf8mb4
+
+and restart the server. Details: docs/TROUBLESHOOTING.md (Fix 2b)
+
+
+3. RUNNING AUTOMATED TESTS
+--------------------------------------------------------------------------------
+To run the automated test suite (26 tests covering auth, borrow lifecycle, handover OTP,
+return OTP, payments, admin access, Query Lab guards and image-upload validation):
+
+  python -m pytest backend/tests -v
+
+
+4. REAL EMAIL DISPATCH (SENDING LIVE OTPS TO INBOXES)
+--------------------------------------------------------------------------------
+By default, BorrowHub logs the OTP code directly to the server terminal and
+auto-fills it into the web form for instant testing.
+
+To send real OTP emails directly to student Gmail / SVNIT inboxes:
+1. Open backend/.env
+2. Configure your SMTP provider (Gmail, Outlook, or SVNIT SMTP):
+     SMTP_HOST=smtp.gmail.com
+     SMTP_PORT=587
+     SMTP_USER=your_email@gmail.com
+     SMTP_PASSWORD=your_16_digit_app_password
+     SMTP_FROM_EMAIL=your_email@gmail.com
+     SMTP_FROM_NAME="BorrowHub SVNIT"
+     SMTP_TLS=True
+
+How to get a Gmail App Password:
+  - Visit: https://myaccount.google.com/security
+  - Enable "2-Step Verification" (if not already enabled)
+  - Search for "App Passwords" -> Type name "BorrowHub" -> Click Generate.
+  - Paste the 16-character password into SMTP_PASSWORD.
+
+
+5. DATABASE DETAILS (MySQL 8.0)
+--------------------------------------------------------------------------------
+  Database:    borrowhub
+  Host:        localhost:3306
+  User:        root
+  Password:    12345
+  Schema:      database/schema.sql (25 tables, 7 views, 30 triggers, 33 routines)
+  Seed Data:   database/seed.sql (7 demo accounts, 6 items)
+  NOTE:        both schema.sql and seed.sql must be applied. Running only the schema
+               creates no accounts and sign-in returns 401.
+
+
+6. DOCUMENTATION DIRECTORY
+--------------------------------------------------------------------------------
+  docs/API_DOCUMENTATION.md             Complete OpenAPI REST endpoints & examples
+  docs/DATABASE_DESIGN.md              ER diagram, data dictionary & triggers
+  docs/SECURITY_ASSESSMENT.md          Threat model, OTP security & RBAC
+  docs/PAYMENT_AND_CLOUDINARY_GUIDE.md Razorpay and Cloudinary integration guide
+  docs/DEPLOYMENT.md                   Local setup and cloud production guide
+  docs/TROUBLESHOOTING.md              Step-by-step fixes for sign-in/database problems
+  STEP_BY_STEP.md                      Deployment walkthrough (GitHub + Render + MySQL)
+================================================================================
